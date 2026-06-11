@@ -142,6 +142,8 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
   const initialSyncDone = useRef<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
+  const prevOnlineUsersRef = useRef<string[]>([]);
+  const isTabFocusedRef = useRef<boolean>(true);
 
   // 1. Initial configuration check & database validation
   useEffect(() => {
@@ -234,6 +236,11 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
     };
   }, []);
 
+  // Keep tab focus ref in sync
+  useEffect(() => {
+    isTabFocusedRef.current = isTabFocused;
+  }, [isTabFocused]);
+
   // Click outside emoji picker logic
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -324,7 +331,7 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
             return [...prev, newMsg];
           });
 
-          if (!isTabFocused) {
+          if (!isTabFocusedRef.current) {
             setUnreadCount(c => c + 1);
           }
 
@@ -347,6 +354,7 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
     channel.on('presence', { event: 'sync' }, () => {
       const state = channel.presenceState();
       const userList: PresenceUser[] = [];
+      const currentOnlineUsernames: string[] = [];
       
       Object.keys(state).forEach(key => {
         const userPresences = state[key] as any;
@@ -356,6 +364,7 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
             avatar: userPresences[0].avatar || '',
             joinedAt: userPresences[0].joinedAt || Date.now(),
           });
+          currentOnlineUsernames.push(key);
         }
       });
       
@@ -363,21 +372,29 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
       setOnlineUsers(userList);
 
       if (!initialSyncDone.current) {
-        setTimeout(() => {
-          initialSyncDone.current = true;
-        }, 500);
-      }
-    });
+        prevOnlineUsersRef.current = currentOnlineUsernames;
+        initialSyncDone.current = true;
+      } else {
+        const joined = currentOnlineUsernames.filter(
+          u => !prevOnlineUsersRef.current.includes(u)
+        );
+        const left = prevOnlineUsersRef.current.filter(
+          u => !currentOnlineUsernames.includes(u)
+        );
 
-    channel.on('presence', { event: 'join' }, ({ key }) => {
-      if (initialSyncDone.current && key && key !== username) {
-        appendSystemMessage(`${key} joined the cozy squad 🌸`);
-      }
-    });
+        joined.forEach(key => {
+          if (key !== username) {
+            appendSystemMessage(`${key} joined the cozy squad 🌸`);
+          }
+        });
 
-    channel.on('presence', { event: 'leave' }, ({ key }) => {
-      if (initialSyncDone.current && key) {
-        appendSystemMessage(`${key} left the room 🌙`);
+        left.forEach(key => {
+          if (key !== username) {
+            appendSystemMessage(`${key} left the room 🌙`);
+          }
+        });
+
+        prevOnlineUsersRef.current = currentOnlineUsernames;
       }
     });
 
@@ -410,7 +427,7 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
         channelRef.current.unsubscribe();
       }
     };
-  }, [roomExists, username, roomId, isTabFocused]);
+  }, [roomExists, username, roomId]);
 
   const isNearBottom = () => {
     const container = containerRef.current;
