@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { safeGetItem } from '@/lib/safeStorage';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { 
   ArrowLeft01Icon,
@@ -95,7 +96,7 @@ export default function MembersPage({ params }: MembersPageProps) {
 
   // Presence channel to track online status
   useEffect(() => {
-    const savedUsername = localStorage.getItem('rio_username') || localStorage.getItem('whisper_username') || 'Guest';
+    const savedUsername = safeGetItem('rio_username') || safeGetItem('whisper_username') || 'Guest';
 
     const channel = supabase.channel(`room_presence:${roomId}`, {
       config: {
@@ -126,7 +127,7 @@ export default function MembersPage({ params }: MembersPageProps) {
       if (status === 'SUBSCRIBED') {
         await channel.track({
           joinedAt: Date.now(),
-          avatar: localStorage.getItem('rio_avatar') || localStorage.getItem('whisper_avatar') || '🌸',
+          avatar: safeGetItem('rio_avatar') || safeGetItem('whisper_avatar') || '🌸',
         });
       }
     });

@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { safeGetItem, safeSetItem } from '@/lib/safeStorage';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { 
   ArrowLeft01Icon, 
@@ -28,11 +27,14 @@ import {
   MusicNote01Icon, 
   Video01Icon, 
   Compass01Icon, 
-  Rocket01Icon 
+  Rocket01Icon,
+  Cancel01Icon as CancelIcon02
 } from '@hugeicons/core-free-icons';
 
-interface RoomPageProps {
-  params: Promise<{ id: string }>;
+const Cancel01IconComp = CancelIcon02 || Cancel01Icon;
+
+interface RoomPageClientProps {
+  roomId: string;
 }
 
 interface Message {
@@ -95,11 +97,8 @@ const isEmojiOnly = (text: string) => {
   return trimmed.length <= 8 && [...trimmed].every(char => emojiRegex.test(char) || char === ' ');
 };
 
-export default function RoomPage({ params }: RoomPageProps) {
+export default function RoomPageClient({ roomId }: RoomPageClientProps) {
   const router = useRouter();
-  
-  // Unwrap route params
-  const { id: roomId } = use(params);
 
   // User details
   const [username, setUsername] = useState<string>('');
@@ -166,8 +165,8 @@ export default function RoomPage({ params }: RoomPageProps) {
       setRoomExists(true);
 
       // Check username in localStorage
-      const savedUsername = safeGetItem('rio_username') || safeGetItem('whisper_username');
-      const savedAvatar = safeGetItem('rio_avatar') || safeGetItem('whisper_avatar');
+      const savedUsername = localStorage.getItem('rio_username') || localStorage.getItem('whisper_username');
+      const savedAvatar = localStorage.getItem('rio_avatar') || localStorage.getItem('whisper_avatar');
       if (savedAvatar) {
         setInputAvatar(savedAvatar);
       }
@@ -400,7 +399,7 @@ export default function RoomPage({ params }: RoomPageProps) {
       if (status === 'SUBSCRIBED') {
         await channel.track({
           username,
-          avatar: safeGetItem('rio_avatar') || safeGetItem('whisper_avatar') || '🌸',
+          avatar: localStorage.getItem('rio_avatar') || localStorage.getItem('whisper_avatar') || '🌸',
           joinedAt: Date.now(),
         });
       }
@@ -442,7 +441,7 @@ export default function RoomPage({ params }: RoomPageProps) {
     stopTyping();
 
     try {
-      const userAvatar = safeGetItem('rio_avatar') || safeGetItem('whisper_avatar') || '🌸';
+      const userAvatar = localStorage.getItem('rio_avatar') || localStorage.getItem('whisper_avatar') || '🌸';
       const { error } = await supabase.from('messages').insert({
         room_id: roomId,
         author: `${username}|${userAvatar}`,
@@ -591,10 +590,10 @@ export default function RoomPage({ params }: RoomPageProps) {
       setUsernameError('Username cannot contain the "|" character.');
       return;
     }
-    safeSetItem('rio_username', cleanUsername);
-    safeSetItem('rio_avatar', inputAvatar);
-    safeSetItem('whisper_username', cleanUsername);
-    safeSetItem('whisper_avatar', inputAvatar);
+    localStorage.setItem('rio_username', cleanUsername);
+    localStorage.setItem('rio_avatar', inputAvatar);
+    localStorage.setItem('whisper_username', cleanUsername);
+    localStorage.setItem('whisper_avatar', inputAvatar);
     setUsername(cleanUsername);
     setShowUsernameModal(false);
   };
@@ -633,7 +632,7 @@ export default function RoomPage({ params }: RoomPageProps) {
     return (
       <div className="center-layout">
         <div className="clay-card home-card" style={{ textAlign: 'center' }}>
-          <HugeiconsIcon icon={Cancel01Icon} size={48} style={{ color: 'var(--danger)', margin: '0 auto 16px auto', display: 'block' }} />
+          <HugeiconsIcon icon={Cancel01IconComp} size={48} style={{ color: 'var(--danger)', margin: '0 auto 16px auto', display: 'block' }} />
           <h2 style={{ marginBottom: '12px' }}>Room Not Found</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '24px', lineHeight: 1.5 }}>
             The room code <strong>{roomId}</strong> does not exist. Make sure you entered it correctly.
@@ -743,7 +742,7 @@ export default function RoomPage({ params }: RoomPageProps) {
             onClick={() => setSidebarOpen(false)}
             style={{ display: sidebarOpen ? 'flex' : 'none', marginRight: 0, width: '32px', height: '32px' }}
           >
-            <HugeiconsIcon icon={Cancel01Icon} size={16} />
+            <HugeiconsIcon icon={Cancel01IconComp} size={16} />
           </button>
         </div>
 

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { safeGetItem, safeSetItem } from '@/lib/safeStorage';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { 
   ArrowLeft01Icon, 
@@ -76,11 +77,11 @@ export default function SettingsPage({ params }: SettingsPageProps) {
       setLoading(false);
 
       // Hydrate local preferences
-      const savedNotifs = localStorage.getItem(`rio_notif_${roomId}`) || localStorage.getItem(`whisper_notif_${roomId}`);
+      const savedNotifs = safeGetItem(`rio_notif_${roomId}`) || safeGetItem(`whisper_notif_${roomId}`);
       if (savedNotifs !== null) {
         setNotifications(savedNotifs === 'true');
       }
-      const savedSounds = localStorage.getItem(`rio_sounds_${roomId}`) || localStorage.getItem(`whisper_sounds_${roomId}`);
+      const savedSounds = safeGetItem(`rio_sounds_${roomId}`) || safeGetItem(`whisper_sounds_${roomId}`);
       if (savedSounds !== null) {
         setSounds(savedSounds === 'true');
       }
@@ -97,14 +98,14 @@ export default function SettingsPage({ params }: SettingsPageProps) {
 
   const handleToggleNotifications = (val: boolean) => {
     setNotifications(val);
-    localStorage.setItem(`rio_notif_${roomId}`, String(val));
-    localStorage.setItem(`whisper_notif_${roomId}`, String(val));
+    safeSetItem(`rio_notif_${roomId}`, String(val));
+    safeSetItem(`whisper_notif_${roomId}`, String(val));
   };
 
   const handleToggleSounds = (val: boolean) => {
     setSounds(val);
-    localStorage.setItem(`rio_sounds_${roomId}`, String(val));
-    localStorage.setItem(`whisper_sounds_${roomId}`, String(val));
+    safeSetItem(`rio_sounds_${roomId}`, String(val));
+    safeSetItem(`whisper_sounds_${roomId}`, String(val));
   };
 
   const handleLeaveRoom = () => {

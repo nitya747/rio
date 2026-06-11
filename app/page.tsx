@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { safeGetItem, safeSetItem } from '@/lib/safeStorage';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { 
   Home01Icon, 
@@ -102,16 +103,20 @@ export default function HomePage() {
   const [publicRooms, setPublicRooms] = useState<any[]>([]);
   const [loadingPublicRooms, setLoadingPublicRooms] = useState(false);
 
+  // Mounted state to prevent hydration errors from browser extensions
+  const [mounted, setMounted] = useState(false);
+
   // Hydrate username and avatar from localStorage on mount
   useEffect(() => {
-    const savedUsername = localStorage.getItem('rio_username') || localStorage.getItem('whisper_username');
+    const savedUsername = safeGetItem('rio_username') || safeGetItem('whisper_username');
     if (savedUsername) {
       setUsername(savedUsername);
     }
-    const savedAvatar = localStorage.getItem('rio_avatar') || localStorage.getItem('whisper_avatar');
+    const savedAvatar = safeGetItem('rio_avatar') || safeGetItem('whisper_avatar');
     if (savedAvatar) {
       setAvatar(savedAvatar);
     }
+    setMounted(true);
   }, []);
 
   // Surprise Me logic
@@ -169,10 +174,10 @@ export default function HomePage() {
     }
 
     // Save username & avatar locally
-    localStorage.setItem('rio_username', trimmedUsername);
-    localStorage.setItem('rio_avatar', avatar);
-    localStorage.setItem('whisper_username', trimmedUsername);
-    localStorage.setItem('whisper_avatar', avatar);
+    safeSetItem('rio_username', trimmedUsername);
+    safeSetItem('rio_avatar', avatar);
+    safeSetItem('whisper_username', trimmedUsername);
+    safeSetItem('whisper_avatar', avatar);
 
     if (activeTab === 'create') {
       if (step === 1) {
@@ -272,10 +277,10 @@ export default function HomePage() {
       setShowPublicRooms(false);
       return;
     }
-    localStorage.setItem('rio_username', trimmedUsername);
-    localStorage.setItem('rio_avatar', avatar);
-    localStorage.setItem('whisper_username', trimmedUsername);
-    localStorage.setItem('whisper_avatar', avatar);
+    safeSetItem('rio_username', trimmedUsername);
+    safeSetItem('rio_avatar', avatar);
+    safeSetItem('whisper_username', trimmedUsername);
+    safeSetItem('whisper_avatar', avatar);
     router.push(`/room/${roomId}`);
   };
 
@@ -334,320 +339,335 @@ export default function HomePage() {
         <div style={{ height: '20px' }}></div>
         <p className="home-subtitle">Join a cozy room or create one for your squad</p>
 
-        {/* Step Indicator */}
-        <div className="step-indicator">
-          <div className={`step-dot ${step >= 1 ? 'active' : ''}`} />
-          <div className="step-line" />
-          <div className={`step-dot ${step >= 2 ? 'active' : ''}`} />
-          {activeTab === 'create' && (
-            <>
+        {mounted ? (
+          <>
+            {/* Step Indicator */}
+            <div className="step-indicator">
+              <div className={`step-dot ${step >= 1 ? 'active' : ''}`} />
               <div className="step-line" />
-              <div className={`step-dot ${step >= 3 ? 'active' : ''}`} />
-            </>
-          )}
-        </div>
-
-        {error && <div className="error-message">{error}</div>}
-
-        <form onSubmit={handleSubmit}>
-          {/* Step 1: Avatar, Username, Tab Switcher */}
-          {step === 1 && (
-            <div className="step-container">
-              {/* Avatar Selector */}
-              <div className="input-group">
-                <label className="input-label">Choose Avatar</label>
-                <div className="avatar-picker-row">
-                  {COZY_AVATARS.map((emoji) => (
-                    <button
-                      key={emoji}
-                      type="button"
-                      className={`avatar-picker-btn ${avatar === emoji ? 'active' : ''}`}
-                      onClick={() => setAvatar(emoji)}
-                    >
-                      {emoji}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Username Input */}
-              <div className="input-group" style={{ marginBottom: 0 }}>
-                <label className="input-label" htmlFor="username">Choose Username</label>
-                <div className="clay-input-wrapper">
-                  <HugeiconsIcon icon={UserIcon} className="clay-input-icon" size={18} />
-                  <input
-                    id="username"
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="e.g. Alyx 🌸"
-                    maxLength={20}
-                    className="text-input"
-                    required
-                    disabled={loading}
-                    autoComplete="off"
-                  />
-                </div>
-              </div>
-
-              <div className="divider" style={{ margin: '4px 0 10px 0' }}>Room Setup</div>
-
-              {/* Recessed Tab Switcher */}
-              <div className="tabs-header-recessed" style={{ marginBottom: 0 }}>
-                <button
-                  type="button"
-                  className={`tab-btn-clay ${activeTab === 'create' ? 'active' : ''}`}
-                  onClick={() => {
-                    setActiveTab('create');
-                    setError(null);
-                  }}
-                  disabled={loading}
-                >
-                  Create
-                </button>
-                <button
-                  type="button"
-                  className={`tab-btn-clay ${activeTab === 'join' ? 'active' : ''}`}
-                  onClick={() => {
-                    setActiveTab('join');
-                    setError(null);
-                  }}
-                  disabled={loading}
-                >
-                  Join
-                </button>
-              </div>
-
-              <button
-                type="submit"
-                className="btn-primary-clay"
-                disabled={loading}
-                style={{ marginTop: '8px' }}
-              >
-                Next Step
-              </button>
+              <div className={`step-dot ${step >= 2 ? 'active' : ''}`} />
+              {activeTab === 'create' && (
+                <>
+                  <div className="step-line" />
+                  <div className={`step-dot ${step >= 3 ? 'active' : ''}`} />
+                </>
+              )}
             </div>
-          )}
 
-          {/* Step 2 (Create): Room Name & Description */}
-          {step === 2 && activeTab === 'create' && (
-            <div className="step-container">
-              {/* Room Name Input */}
-              <div className="input-group" style={{ marginBottom: 0 }}>
-                <label className="input-label" htmlFor="roomName">Room Name</label>
-                <div className="clay-input-wrapper">
-                  <HugeiconsIcon icon={SparklesIcon} className="clay-input-icon" size={18} />
-                  <input
-                    id="roomName"
-                    type="text"
-                    value={roomName}
-                    onChange={(e) => setRoomName(e.target.value)}
-                    placeholder="e.g. Chill Corner"
-                    maxLength={30}
-                    className="text-input"
-                    required={activeTab === 'create'}
-                    disabled={loading}
-                    autoComplete="off"
-                    style={{ paddingRight: '48px' }}
-                  />
+            {error && <div className="error-message">{error}</div>}
+
+            <form onSubmit={handleSubmit}>
+              {/* Step 1: Avatar, Username, Tab Switcher */}
+              {step === 1 && (
+                <div className="step-container">
+                  {/* Avatar Selector */}
+                  <div className="input-group">
+                    <label className="input-label">Choose Avatar</label>
+                    <div className="avatar-picker-row">
+                      {COZY_AVATARS.map((emoji) => (
+                        <button
+                          key={emoji}
+                          type="button"
+                          className={`avatar-picker-btn ${avatar === emoji ? 'active' : ''}`}
+                          onClick={() => setAvatar(emoji)}
+                        >
+                          {emoji}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Username Input */}
+                  <div className="input-group" style={{ marginBottom: 0 }}>
+                    <label className="input-label" htmlFor="username">Choose Username</label>
+                    <div className="clay-input-wrapper">
+                      <HugeiconsIcon icon={UserIcon} className="clay-input-icon" size={18} />
+                      <input
+                        id="username"
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="e.g. Alyx 🌸"
+                        maxLength={20}
+                        className="text-input"
+                        required
+                        disabled={loading}
+                        autoComplete="off"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="divider" style={{ margin: '4px 0 10px 0' }}>Room Setup</div>
+
+                  {/* Recessed Tab Switcher */}
+                  <div className="tabs-header-recessed" style={{ marginBottom: 0 }}>
+                    <button
+                      type="button"
+                      className={`tab-btn-clay ${activeTab === 'create' ? 'active' : ''}`}
+                      onClick={() => {
+                        setActiveTab('create');
+                        setError(null);
+                      }}
+                      disabled={loading}
+                    >
+                      Create
+                    </button>
+                    <button
+                      type="button"
+                      className={`tab-btn-clay ${activeTab === 'join' ? 'active' : ''}`}
+                      onClick={() => {
+                        setActiveTab('join');
+                        setError(null);
+                      }}
+                      disabled={loading}
+                    >
+                      Join
+                    </button>
+                  </div>
+
                   <button
-                    type="button"
-                    className="input-inline-btn"
-                    onClick={handleSurpriseMe}
-                    title="Cozy random setup"
+                    type="submit"
+                    className="btn-primary-clay"
                     disabled={loading}
+                    style={{ marginTop: '8px' }}
                   >
-                    ✨
+                    Next Step
                   </button>
                 </div>
-              </div>
+              )}
 
-              {/* Room Description Input */}
-              <div className="input-group" style={{ marginBottom: 0 }}>
-                <label className="input-label" htmlFor="roomDesc">What's this room about?</label>
-                <div className="clay-input-wrapper">
-                  <HugeiconsIcon icon={Message01Icon} className="clay-input-icon" size={18} />
-                  <input
-                    id="roomDesc"
-                    type="text"
-                    value={roomDescription}
-                    onChange={(e) => setRoomDescription(e.target.value)}
-                    placeholder="Pop it in below..."
-                    maxLength={60}
-                    className="text-input"
-                    disabled={loading}
-                    autoComplete="off"
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
-                <button
-                  type="button"
-                  className="btn-primary-clay btn-accent-clay"
-                  onClick={() => {
-                    setError(null);
-                    setStep(1);
-                  }}
-                  disabled={loading}
-                  style={{ flex: 1, padding: '14px 12px' }}
-                >
-                  Back
-                </button>
-                <button
-                  type="submit"
-                  className="btn-primary-clay"
-                  disabled={loading}
-                  style={{ flex: 2 }}
-                >
-                  Next Step
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Step 3 (Create): Room Icon & Privacy Selection */}
-          {step === 3 && activeTab === 'create' && (
-            <div className="step-container">
-              {/* Icon Picker (Clay Tiles Grid) */}
-              <div className="input-group" style={{ marginBottom: 0 }}>
-                <label className="input-label">Pick Room Icon</label>
-                <div className="icon-picker-grid">
-                  {Object.keys(ICON_MAP).map((iconKey) => {
-                    const IconData = ICON_MAP[iconKey];
-                    return (
-                      <div
-                        key={iconKey}
-                        className={`icon-picker-tile ${selectedIcon === iconKey ? 'active' : ''}`}
-                        onClick={() => setSelectedIcon(iconKey)}
+              {/* Step 2 (Create): Room Name & Description */}
+              {step === 2 && activeTab === 'create' && (
+                <div className="step-container">
+                  {/* Room Name Input */}
+                  <div className="input-group" style={{ marginBottom: 0 }}>
+                    <label className="input-label" htmlFor="roomName">Room Name</label>
+                    <div className="clay-input-wrapper">
+                      <HugeiconsIcon icon={SparklesIcon} className="clay-input-icon" size={18} />
+                      <input
+                        id="roomName"
+                        type="text"
+                        value={roomName}
+                        onChange={(e) => setRoomName(e.target.value)}
+                        placeholder="e.g. Chill Corner"
+                        maxLength={30}
+                        className="text-input"
+                        required={activeTab === 'create'}
+                        disabled={loading}
+                        autoComplete="off"
+                        style={{ paddingRight: '48px' }}
+                      />
+                      <button
+                        type="button"
+                        className="input-inline-btn"
+                        onClick={handleSurpriseMe}
+                        title="Cozy random setup"
+                        disabled={loading}
                       >
-                        {IconData && <HugeiconsIcon icon={IconData} />}
+                        ✨
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Room Description Input */}
+                  <div className="input-group" style={{ marginBottom: 0 }}>
+                    <label className="input-label" htmlFor="roomDesc">What's this room about?</label>
+                    <div className="clay-input-wrapper">
+                      <HugeiconsIcon icon={Message01Icon} className="clay-input-icon" size={18} />
+                      <input
+                        id="roomDesc"
+                        type="text"
+                        value={roomDescription}
+                        onChange={(e) => setRoomDescription(e.target.value)}
+                        placeholder="Pop it in below..."
+                        maxLength={60}
+                        className="text-input"
+                        disabled={loading}
+                        autoComplete="off"
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
+                    <button
+                      type="button"
+                      className="btn-primary-clay btn-accent-clay"
+                      onClick={() => {
+                        setError(null);
+                        setStep(1);
+                      }}
+                      disabled={loading}
+                      style={{ flex: 1, padding: '14px 12px' }}
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn-primary-clay"
+                      disabled={loading}
+                      style={{ flex: 2 }}
+                    >
+                      Next Step
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 3 (Create): Room Icon & Privacy Selection */}
+              {step === 3 && activeTab === 'create' && (
+                <div className="step-container">
+                  {/* Icon Picker (Clay Tiles Grid) */}
+                  <div className="input-group" style={{ marginBottom: 0 }}>
+                    <label className="input-label">Pick Room Icon</label>
+                    <div className="icon-picker-grid">
+                      {Object.keys(ICON_MAP).map((iconKey) => {
+                        const IconData = ICON_MAP[iconKey];
+                        return (
+                          <div
+                            key={iconKey}
+                            className={`icon-picker-tile ${selectedIcon === iconKey ? 'active' : ''}`}
+                            onClick={() => setSelectedIcon(iconKey)}
+                          >
+                            {IconData && <HugeiconsIcon icon={IconData} />}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Privacy chips selector */}
+                  <div className="input-group" style={{ marginBottom: 0 }}>
+                    <label className="input-label">Privacy Mode</label>
+                    <div className="chips-container">
+                      <div
+                        className={`privacy-chip ${privacy === 'public' ? 'active' : ''}`}
+                        onClick={() => setPrivacy('public')}
+                      >
+                        Public
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
+                      <div
+                        className={`privacy-chip ${privacy === 'private' ? 'active' : ''}`}
+                        onClick={() => setPrivacy('private')}
+                      >
+                        Private
+                      </div>
+                      <div
+                        className={`privacy-chip ${privacy === 'invite' ? 'active' : ''}`}
+                        onClick={() => setPrivacy('invite')}
+                      >
+                        Invite
+                      </div>
+                    </div>
+                  </div>
 
-              {/* Privacy chips selector */}
-              <div className="input-group" style={{ marginBottom: 0 }}>
-                <label className="input-label">Privacy Mode</label>
-                <div className="chips-container">
-                  <div
-                    className={`privacy-chip ${privacy === 'public' ? 'active' : ''}`}
-                    onClick={() => setPrivacy('public')}
-                  >
-                    Public
-                  </div>
-                  <div
-                    className={`privacy-chip ${privacy === 'private' ? 'active' : ''}`}
-                    onClick={() => setPrivacy('private')}
-                  >
-                    Private
-                  </div>
-                  <div
-                    className={`privacy-chip ${privacy === 'invite' ? 'active' : ''}`}
-                    onClick={() => setPrivacy('invite')}
-                  >
-                    Invite
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
+                    <button
+                      type="button"
+                      className="btn-primary-clay btn-accent-clay"
+                      onClick={() => {
+                        setError(null);
+                        setStep(2);
+                      }}
+                      disabled={loading}
+                      style={{ flex: 1, padding: '14px 12px' }}
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn-primary-clay"
+                      disabled={loading}
+                      style={{ flex: 2 }}
+                    >
+                      {loading ? 'Creating...' : 'Create Room'}
+                    </button>
                   </div>
                 </div>
-              </div>
+              )}
 
-              <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
-                <button
-                  type="button"
-                  className="btn-primary-clay btn-accent-clay"
-                  onClick={() => {
-                    setError(null);
-                    setStep(2);
-                  }}
-                  disabled={loading}
-                  style={{ flex: 1, padding: '14px 12px' }}
-                >
-                  Back
-                </button>
-                <button
-                  type="submit"
-                  className="btn-primary-clay"
-                  disabled={loading}
-                  style={{ flex: 2 }}
-                >
-                  {loading ? 'Creating...' : 'Create Room'}
-                </button>
-              </div>
+              {/* Step 2 (Join): Room Code Input */}
+              {step === 2 && activeTab === 'join' && (
+                <div className="step-container">
+                  <div className="input-group" style={{ marginBottom: 0 }}>
+                    <label className="input-label" htmlFor="roomCode">Room Code</label>
+                    <div className="clay-input-wrapper">
+                      <HugeiconsIcon icon={Key01Icon} className="clay-input-icon" size={18} />
+                      <input
+                        id="roomCode"
+                        type="text"
+                        value={roomCode}
+                        onChange={(e) => {
+                          let val = e.target.value;
+                          if (val.includes('/room/')) {
+                            const parts = val.split('/room/');
+                            let code = parts[parts.length - 1];
+                            if (code) {
+                              code = code.split('?')[0].split('#')[0].replace(/\/+$/, '');
+                              val = code.slice(0, 6);
+                            }
+                          } else {
+                            val = val.slice(0, 6);
+                          }
+                          setRoomCode(val.toLowerCase());
+                        }}
+                        placeholder="e.g. a1b2c3"
+                        className="text-input"
+                        required={activeTab === 'join'}
+                        disabled={loading}
+                        autoComplete="off"
+                        style={{ textTransform: 'lowercase' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
+                    <button
+                      type="button"
+                      className="btn-primary-clay btn-accent-clay"
+                      onClick={() => {
+                        setError(null);
+                        setStep(1);
+                      }}
+                      disabled={loading}
+                      style={{ flex: 1, padding: '14px 12px' }}
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn-primary-clay"
+                      disabled={loading}
+                      style={{ flex: 2 }}
+                    >
+                      {loading ? 'Joining...' : 'Join Room'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </form>
+
+            {/* Ghost button for browsing public rooms */}
+            {step === 1 && (
+              <button
+                type="button"
+                className="btn-ghost-clay"
+                onClick={handleOpenPublicRooms}
+              >
+                <HugeiconsIcon icon={GlobalIcon} size={18} /> Browse public rooms
+              </button>
+            )}
+          </>
+        ) : (
+          <div className="skeleton-placeholder" style={{ height: '300px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '16px' }}>
+            <div className="typing-bubble" style={{ padding: '24px', border: '3px solid var(--text-heading)', borderRadius: '24px', background: 'var(--surface-card)', boxShadow: '0 8px 0 0 var(--card-shadow)', display: 'flex', gap: '6px' }}>
+              <div className="typing-dot" style={{ background: 'var(--primary-purple)', width: '10px', height: '10px', borderRadius: '50%' }}></div>
+              <div className="typing-dot" style={{ background: 'var(--primary-purple)', width: '10px', height: '10px', borderRadius: '50%' }}></div>
+              <div className="typing-dot" style={{ background: 'var(--primary-purple)', width: '10px', height: '10px', borderRadius: '50%' }}></div>
             </div>
-          )}
-
-          {/* Step 2 (Join): Room Code Input */}
-          {step === 2 && activeTab === 'join' && (
-            <div className="step-container">
-              <div className="input-group" style={{ marginBottom: 0 }}>
-                <label className="input-label" htmlFor="roomCode">Room Code</label>
-                <div className="clay-input-wrapper">
-                  <HugeiconsIcon icon={Key01Icon} className="clay-input-icon" size={18} />
-                  <input
-                    id="roomCode"
-                    type="text"
-                    value={roomCode}
-                    onChange={(e) => {
-                      let val = e.target.value;
-                      if (val.includes('/room/')) {
-                        const parts = val.split('/room/');
-                        let code = parts[parts.length - 1];
-                        if (code) {
-                          code = code.split('?')[0].split('#')[0].replace(/\/+$/, '');
-                          val = code.slice(0, 6);
-                        }
-                      } else {
-                        val = val.slice(0, 6);
-                      }
-                      setRoomCode(val.toLowerCase());
-                    }}
-                    placeholder="e.g. a1b2c3"
-                    className="text-input"
-                    required={activeTab === 'join'}
-                    disabled={loading}
-                    autoComplete="off"
-                    style={{ textTransform: 'lowercase' }}
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
-                <button
-                  type="button"
-                  className="btn-primary-clay btn-accent-clay"
-                  onClick={() => {
-                    setError(null);
-                    setStep(1);
-                  }}
-                  disabled={loading}
-                  style={{ flex: 1, padding: '14px 12px' }}
-                >
-                  Back
-                </button>
-                <button
-                  type="submit"
-                  className="btn-primary-clay"
-                  disabled={loading}
-                  style={{ flex: 2 }}
-                >
-                  {loading ? 'Joining...' : 'Join Room'}
-                </button>
-              </div>
-            </div>
-          )}
-        </form>
-
-        {/* Ghost button for browsing public rooms */}
-        {step === 1 && (
-          <button
-            type="button"
-            className="btn-ghost-clay"
-            onClick={handleOpenPublicRooms}
-          >
-            <HugeiconsIcon icon={GlobalIcon} size={18} /> Browse public rooms
-          </button>
+            <span style={{ color: 'var(--text-heading)', fontWeight: '900', fontSize: '1rem' }}>
+              Opening lobby... 🌸
+            </span>
+          </div>
         )}
       </div>
 

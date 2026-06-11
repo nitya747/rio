@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { safeGetItem } from '@/lib/safeStorage';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { 
   ArrowLeft01Icon, 
@@ -48,7 +49,7 @@ export default function NotificationsPage() {
   const [username, setUsername] = useState('');
 
   useEffect(() => {
-    const savedUsername = localStorage.getItem('rio_username') || localStorage.getItem('whisper_username') || '';
+    const savedUsername = safeGetItem('rio_username') || safeGetItem('whisper_username') || '';
     setUsername(savedUsername);
 
     const fetchNotifications = async () => {
