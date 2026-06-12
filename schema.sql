@@ -19,7 +19,8 @@ create table if not exists public.messages (
   author text not null, -- Display name chosen by the message sender
   text text not null,   -- Message content
   created_at timestamptz default timezone('utc'::text, now()) not null,
-  likes text[] default '{}'::text[] not null -- Usernames who liked this message
+  likes text[] default '{}'::text[] not null, -- Usernames who liked this message
+  reply_to_id uuid references public.messages(id) on delete set null
 );
 
 -- Enable Row Level Security (RLS)

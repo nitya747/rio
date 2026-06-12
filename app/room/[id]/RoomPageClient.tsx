@@ -45,6 +45,7 @@ interface Message {
   created_at: string;
   isSystem?: boolean;
   likes?: string[]; // Used for reactions/likes array
+  reply_to_id?: string; // Reference to the parent message ID
 }
 
 interface PresenceUser {
@@ -132,6 +133,7 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
   // Heart pop animation & reactions panel
   const [likedAnimationId, setLikedAnimationId] = useState<string | null>(null);
   const [activeReactionMsgId, setActiveReactionMsgId] = useState<string | null>(null);
+  const [replyingTo, setReplyingTo] = useState<Message | null>(null);
 
   // Refs for scroll and connection tracking
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -441,6 +443,17 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
     setShowScrollButton(false);
   };
 
+  const scrollToMessage = (msgId: string) => {
+    const el = document.getElementById(`msg-bubble-${msgId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('highlight-flash');
+      setTimeout(() => {
+        el.classList.remove('highlight-flash');
+      }, 1200);
+    }
+  };
+
   const handleScroll = () => {
     const container = containerRef.current;
     if (!container) return;
@@ -454,8 +467,11 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
     const messageText = inputText.trim();
     if (!messageText) return;
 
+    const currentReplyToId = replyingTo?.id;
+
     setInputText('');
     stopTyping();
+    setReplyingTo(null);
 
     try {
       const userAvatar = localStorage.getItem('rio_avatar') || localStorage.getItem('whisper_avatar') || '🌸';
@@ -463,6 +479,7 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
         room_id: roomId,
         author: `${username}|${userAvatar}`,
         text: messageText,
+        reply_to_id: currentReplyToId || null,
       });
 
       if (error) {
@@ -869,7 +886,7 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
 
             const [msgAuthor, msgAvatar] = msg.author.split('|');
             const isMe = msgAuthor === username;
-            const emojiMsg = isEmojiOnly(msg.text);
+            const emojiMsg = isEmojiOnly(msg.text) && !msg.reply_to_id;
             const { counts: reactionCounts, hasMyHeart } = getReactionsCounts(msg.likes);
 
             return (
@@ -894,6 +911,7 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
                     
                     {emojiMsg ? (
                       <div 
+                        id={`msg-bubble-${msg.id}`}
                         className="message-sticker-clay"
                         onDoubleClick={(e) => {
                           e.stopPropagation();
@@ -905,6 +923,7 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
                       </div>
                     ) : (
                       <div 
+                        id={`msg-bubble-${msg.id}`}
                         className="message-bubble-clay"
                         onClick={() => setActiveReactionMsgId(activeReactionMsgId === msg.id ? null : msg.id)}
                         onDoubleClick={(e) => {
@@ -913,6 +932,23 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
                         }}
                         style={{ cursor: 'pointer' }}
                       >
+                        {msg.reply_to_id && (() => {
+                          const parent = messages.find(m => m.id === msg.reply_to_id);
+                          if (!parent) return null;
+                          const [parentAuthor] = parent.author.split('|');
+                          return (
+                            <div 
+                              className="message-reply-preview-bubble"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (msg.reply_to_id) scrollToMessage(msg.reply_to_id);
+                              }}
+                            >
+                              <span className="reply-preview-author">@{parentAuthor}</span>
+                              <p className="reply-preview-text">{parent.text}</p>
+                            </div>
+                          );
+                        })()}
                         <div className="message-text">{msg.text}</div>
                         <span className="message-time-stamp">{formatTime(msg.created_at)}</span>
                         
@@ -927,6 +963,18 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
                                 {emoji}
                               </span>
                             ))}
+                            <div className="reactions-separator"></div>
+                            <span 
+                              className="reply-action-tile"
+                              onClick={() => {
+                                setReplyingTo(msg);
+                                setActiveReactionMsgId(null);
+                                setTimeout(() => inputRef.current?.focus(), 50);
+                              }}
+                              title="Reply to message"
+                            >
+                              ↩️ Reply
+                            </span>
                           </div>
                         )}
 
@@ -986,6 +1034,27 @@ export default function RoomPageClient({ roomId }: RoomPageClientProps) {
             🌸 Jump to latest
           </button>
         )}
+
+        {/* Reply preview bar */}
+        {replyingTo && (() => {
+          const [replyAuthor] = replyingTo.author.split('|');
+          return (
+            <div className="reply-preview-bar-clay">
+              <div className="reply-bar-details">
+                <span className="reply-bar-title">Replying to {replyAuthor}</span>
+                <p className="reply-bar-text">{replyingTo.text}</p>
+              </div>
+              <button 
+                type="button" 
+                className="reply-bar-close-btn"
+                onClick={() => setReplyingTo(null)}
+                title="Cancel reply"
+              >
+                <HugeiconsIcon icon={Cancel01IconComp} size={14} />
+              </button>
+            </div>
+          );
+        })()}
 
         {/* Input composer tag */}
         <div className="composer-panel-clay" style={{ position: 'relative' }}>

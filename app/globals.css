@@ -30,7 +30,8 @@
   margin: 0;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   width: 100%;
   background-color: var(--bg);
@@ -64,7 +65,12 @@ html, body {
 }
 
 /* Typography elements */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-nunito);
   font-weight: 900;
   color: var(--text-heading);
@@ -188,7 +194,8 @@ a:hover {
   max-width: 440px;
   min-height: 520px;
   padding: 32px 28px 24px 28px;
-  margin-top: 110px; /* offset for chibi */
+  margin-top: 110px;
+  /* offset for chibi */
   animation: cardEnter 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -269,7 +276,8 @@ a:hover {
   border-radius: 14px;
   color: var(--text-heading);
   padding: 10px 14px;
-  padding-left: 42px; /* make space for icon */
+  padding-left: 42px;
+  /* make space for icon */
   font-size: 1rem;
   font-weight: 800;
   width: 100%;
@@ -712,8 +720,13 @@ a:hover {
   border: 2px solid var(--text-heading);
 }
 
-.msg-avatar-status.online { background-color: var(--status-green); }
-.msg-avatar-status.idle { background-color: var(--status-yellow); }
+.msg-avatar-status.online {
+  background-color: var(--status-green);
+}
+
+.msg-avatar-status.idle {
+  background-color: var(--status-yellow);
+}
 
 .message-content-wrapper {
   display: flex;
@@ -729,7 +742,8 @@ a:hover {
 }
 
 .message-row.sent .message-author {
-  display: none; /* hidden for self */
+  display: none;
+  /* hidden for self */
 }
 
 .message-bubble-clay {
@@ -778,6 +792,7 @@ a:hover {
 .message-row.sent .message-time-stamp {
   color: #DDD5F0;
 }
+
 .message-row.received .message-time-stamp {
   color: var(--text-muted);
 }
@@ -1078,8 +1093,15 @@ a:hover {
 }
 
 @keyframes reactionsEnterSide {
-  from { opacity: 0; transform: translateY(10px) scale(0.9); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .reaction-tile {
@@ -1178,7 +1200,10 @@ a:hover {
 .clay-toggle-slider {
   position: absolute;
   cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: var(--surface-input);
   border: 3px solid var(--text-heading);
   border-radius: 34px;
@@ -1200,11 +1225,11 @@ a:hover {
   box-shadow: 0 2px 0 0 var(--card-shadow);
 }
 
-.clay-toggle input:checked + .clay-toggle-slider {
+.clay-toggle input:checked+.clay-toggle-slider {
   background-color: var(--primary-purple);
 }
 
-.clay-toggle input:checked + .clay-toggle-slider:before {
+.clay-toggle input:checked+.clay-toggle-slider:before {
   transform: translateX(24px);
 }
 
@@ -1233,7 +1258,8 @@ a:hover {
   transform: translateX(-50%);
   z-index: 10;
   display: flex;
-  gap: -8px; /* overlap */
+  gap: -8px;
+  /* overlap */
 }
 
 .members-header-avatar {
@@ -1672,50 +1698,120 @@ a:hover {
 
 /* Animations */
 @keyframes cardEnter {
-  from { opacity: 0; transform: translateY(40px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes modalEnter {
-  from { opacity: 0; transform: scale(0.9) translateY(20px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 @keyframes reactionsEnter {
-  from { opacity: 0; transform: translateX(-50%) translateY(10px) scale(0.9); }
-  to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
 }
 
 @keyframes floatCloud1 {
-  0%, 100% { transform: translateY(0) translateX(0); }
-  50% { transform: translateY(-10px) translateX(15px); }
+
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+
+  50% {
+    transform: translateY(-10px) translateX(15px);
+  }
 }
 
 @keyframes floatCloud2 {
-  0%, 100% { transform: translateY(0) translateX(0); }
-  50% { transform: translateY(12px) translateX(-20px); }
+
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+
+  50% {
+    transform: translateY(12px) translateX(-20px);
+  }
 }
 
 @keyframes floatCloud3 {
-  0%, 100% { transform: translateY(0) translateX(0); }
-  50% { transform: translateY(-8px) translateX(10px); }
+
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+
+  50% {
+    transform: translateY(-8px) translateX(10px);
+  }
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-6px); }
-  75% { transform: translateX(6px); }
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-6px);
+  }
+
+  75% {
+    transform: translateX(6px);
+  }
 }
 
 @keyframes heartPopAnim {
-  0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-  50% { transform: translate(-50%, -75%) scale(1.4); opacity: 0.9; }
-  100% { transform: translate(-50%, -100%) scale(0.8); opacity: 0; }
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+
+  50% {
+    transform: translate(-50%, -75%) scale(1.4);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translate(-50%, -100%) scale(0.8);
+    opacity: 0;
+  }
 }
 
 /* Onboarding Multi-Step Flow Styles */
@@ -1755,10 +1851,13 @@ a:hover {
   flex-wrap: nowrap;
   overflow-x: auto;
   gap: 8px;
-  padding: 8px 12px 12px 12px; /* 12px padding for spacing and smooth mask fade */
+  padding: 8px 12px 12px 12px;
+  /* 12px padding for spacing and smooth mask fade */
   margin: 0;
-  scrollbar-width: none; /* Hide scrollbar for Firefox */
-  -ms-overflow-style: none;  /* Hide scrollbar for IE/Edge */
+  scrollbar-width: none;
+  /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none;
+  /* Hide scrollbar for IE/Edge */
   -webkit-mask-image: linear-gradient(to right, transparent, black 12px, black calc(100% - 12px), transparent);
   mask-image: linear-gradient(to right, transparent, black 12px, black calc(100% - 12px), transparent);
 }
@@ -1771,7 +1870,8 @@ a:hover {
 }
 
 .avatar-picker-row::-webkit-scrollbar {
-  display: none; /* Hide scrollbar Chrome/Safari/Webkit */
+  display: none;
+  /* Hide scrollbar Chrome/Safari/Webkit */
 }
 
 .avatar-picker-btn {
@@ -1849,6 +1949,7 @@ a:hover {
     opacity: 0;
     transform: translateX(20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -1879,11 +1980,13 @@ a:hover {
     margin-top: 85px;
     padding: 24px 24px 16px 24px;
   }
+
   .chibi-peeking-container {
     width: 175px;
     height: 175px;
     top: -125px;
   }
+
   .avatar-picker-row {
     margin: 0;
     padding: 6px 8px 10px 8px;
@@ -1891,33 +1994,41 @@ a:hover {
     -webkit-mask-image: linear-gradient(to right, transparent, black 8px, black calc(100% - 8px), transparent);
     mask-image: linear-gradient(to right, transparent, black 8px, black calc(100% - 8px), transparent);
   }
+
   .home-subtitle {
     margin-bottom: 12px;
     font-size: 0.9rem;
   }
+
   .step-indicator {
     margin-bottom: 12px;
   }
+
   .input-group {
     margin-bottom: 12px;
   }
+
   .text-input {
     padding: 8px 12px 8px 38px;
     font-size: 0.95rem;
   }
+
   .avatar-picker-btn {
     font-size: 1.15rem;
     width: 38px;
     height: 38px;
   }
+
   .btn-primary-clay {
     padding: 9px 16px;
     font-size: 0.95rem;
   }
+
   .tabs-header-recessed {
     padding: 4px;
     margin-bottom: 12px;
   }
+
   .tab-btn-clay {
     padding: 6px;
     font-size: 0.9rem;
@@ -1931,11 +2042,13 @@ a:hover {
     margin-top: 65px;
     padding: 20px 20px 12px 20px;
   }
+
   .chibi-peeking-container {
     width: 135px;
     height: 135px;
     top: -95px;
   }
+
   .avatar-picker-row {
     margin: 0;
     padding: 4px 6px 8px 6px;
@@ -1943,33 +2056,41 @@ a:hover {
     -webkit-mask-image: linear-gradient(to right, transparent, black 6px, black calc(100% - 6px), transparent);
     mask-image: linear-gradient(to right, transparent, black 6px, black calc(100% - 6px), transparent);
   }
+
   .home-subtitle {
     margin-bottom: 8px;
     font-size: 0.85rem;
   }
+
   .step-indicator {
     margin-bottom: 8px;
   }
+
   .input-group {
     margin-bottom: 8px;
   }
+
   .text-input {
     padding: 6px 10px 6px 36px;
     font-size: 0.9rem;
   }
+
   .avatar-picker-btn {
     font-size: 1rem;
     width: 32px;
     height: 32px;
   }
+
   .btn-primary-clay {
     padding: 8px 14px;
     font-size: 0.9rem;
   }
+
   .tabs-header-recessed {
     padding: 3px;
     margin-bottom: 8px;
   }
+
   .tab-btn-clay {
     padding: 5px;
     font-size: 0.85rem;
