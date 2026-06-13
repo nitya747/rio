@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180" fill="none">
+  <!-- Stem -->
+  <path d="M90 120 V80" stroke="#4D7C0F" strokeWidth="6" strokeLinecap="round"/>
+  <!-- Leaves -->
+  <path d="M90 100 C75 95 65 95 72 105 C80 110 90 105 90 100 Z" fill="#4D7C0F" stroke="#3F6212" strokeWidth="3"/>
+  <!-- Petals -->
+  <circle cx="90" cy="55" r="18" fill="#F472B6" stroke="#BE185D" strokeWidth="4"/>
+  <circle cx="70" cy="70" r="18" fill="#F472B6" stroke="#BE185D" strokeWidth="4"/>
+  <circle cx="110" cy="70" r="18" fill="#F472B6" stroke="#BE185D" strokeWidth="4"/>
+  <circle cx="80" cy="90" r="18" fill="#F472B6" stroke="#BE185D" strokeWidth="4"/>
+  <circle cx="100" cy="90" r="18" fill="#F472B6" stroke="#BE185D" strokeWidth="4"/>
+  <!-- Center -->
+  <circle cx="90" cy="75" r="14" fill="#FACC15" stroke="#BE185D" strokeWidth="4"/>
+  <!-- Pot -->
+  <path d="M65 115 H115 L107 160 H73 Z" fill="#D97706" stroke="#78350F" strokeWidth="4"/>
+  <rect x="60" y="106" width="60" height="12" rx="5" fill="#F59E0B" stroke="#78350F" strokeWidth="4"/>
+</svg>
