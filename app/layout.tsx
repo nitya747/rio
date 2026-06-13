@@ -4,6 +4,18 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Rio Chat — Cozy Real-Time Discussion",
   description: "A fast, open-access real-time chat room application powered by Supabase Realtime, Presence, and Broadcast.",
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
+  manifest: '/site.webmanifest',
+  appleWebApp: {
+    title: 'Rio Chat',
+  },
 };
 
 export default function RootLayout({
