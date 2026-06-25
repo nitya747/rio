@@ -1,4 +1,4 @@
-# Rio 🌸 — A Cozy Claymorphic Real-Time Chat Application
+# Rio  — A Cozy Claymorphic Real-Time Chat Application
 
 ### 🔗 Live Demo: [rio-gilt.vercel.app](https://rio-gilt.vercel.app/)
 
@@ -8,7 +8,7 @@ Built with **Next.js 16**, **React 19**, and **Supabase**, Rio combines a premiu
 
 ---
 
-## 🎨 Design System & Aesthetics
+##  Design System & Aesthetics
 
 Rio's design language is built on the principles of **Claymorphism**: everything is thick, soft, tactile, and playful.
 
@@ -19,11 +19,11 @@ Rio's design language is built on the principles of **Claymorphism**: everything
 
 ---
 
-## ✨ Features
+##  Features
 
 ### 1. Cozy Lobby & Onboarding
 - **Multi-Step Onboarding**: A user setup card guiding users through choosing a username, selecting an avatar emoji (out of 16 cozy options), and choosing whether to create a new room or join an existing one.
-- **Surprise Me `✨`**: Automatically generates creative cozy room names and matching descriptions (e.g. *Tea Corner*, *Study Sanctuary*, *Cloud Watching*) at the tap of a button.
+- **Surprise Me ``**: Automatically generates creative cozy room names and matching descriptions (e.g. *Tea Corner*, *Study Sanctuary*, *Cloud Watching*) at the tap of a button.
 - **Customizable Room Spaces**: Configure the room name, description, privacy mode (Public, Private, Invite), and select a matching category icon from a clay tile selector grid.
 - **Public Room Browser**: Browse and instantly join active public rooms fetched in real-time from the database.
 
@@ -78,7 +78,7 @@ Rio's design language is built on the principles of **Claymorphism**: everything
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
@@ -118,7 +118,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to experie
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```
 ├── app/
@@ -150,5 +150,5 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to experie
 
 ---
 
-## 📄 License
+## License
 This project is open-source and available under the MIT License.
